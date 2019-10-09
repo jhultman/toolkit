@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.colors as mcolors
 from PIL import Image
+import cv2
 
 
 fig_dict = {}
@@ -15,7 +16,7 @@ patch_dict = {}
 def show_frame(image, boxes=None, fig_n=1, pause=0.001,
                linewidth=3, cmap=None, colors=None, legends=None):
     r"""Visualize an image w/o drawing rectangle(s).
-    
+
     Args:
         image (numpy.ndarray or PIL.Image): Image to show.
         boxes (numpy.array or a list of numpy.ndarray, optional): A 4 dimensional array
@@ -42,7 +43,7 @@ def show_frame(image, boxes=None, fig_n=1, pause=0.001,
     if boxes is not None:
         if not isinstance(boxes, (list, tuple)):
             boxes = [boxes]
-        
+
         if colors is None:
             colors = ['r', 'g', 'b', 'c', 'm', 'y'] + \
                 list(mcolors.CSS4_COLORS.keys())
@@ -63,7 +64,7 @@ def show_frame(image, boxes=None, fig_n=1, pause=0.001,
                 patch.set_xy((box[0], box[1]))
                 patch.set_width(box[2])
                 patch.set_height(box[3])
-        
+
         if legends is not None:
             fig_dict[fig_n].axes.legend(
                 patch_dict[fig_n], legends, loc=1,
@@ -71,3 +72,41 @@ def show_frame(image, boxes=None, fig_n=1, pause=0.001,
 
     plt.pause(pause)
     plt.draw()
+
+
+def show_frame_fast(img, boxes=None, colors=None, thickness=3,
+               fig_n=1, delay=1, cvt_code=cv2.COLOR_RGB2BGR):
+    if cvt_code is not None:
+        img = cv2.cvtColor(img, cvt_code)
+
+    if boxes is not None:
+        boxes = np.array(boxes, dtype=np.int32)
+        if boxes.ndim == 1:
+            boxes = np.expand_dims(boxes, axis=0)
+
+        if colors is None:
+            colors = [
+                (0, 0, 255),
+                (0, 255, 0),
+                (255, 0, 0),
+                (0, 255, 255),
+                (255, 0, 255),
+                (255, 255, 0),
+                (0, 0, 128),
+                (0, 128, 0),
+                (128, 0, 0),
+                (0, 128, 128),
+                (128, 0, 128),
+                (128, 128, 0)]
+        colors = np.array(colors, dtype=np.int32)
+        if colors.ndim == 1:
+            colors = np.expand_dims(colors, axis=0)
+
+        for box, color in zip(boxes, colors):
+            pt1 = (box[0], box[1])
+            pt2 = (box[0] + box[2], box[1] + box[3])
+            img = cv2.rectangle(img, pt1, pt2, color.tolist(), thickness)
+
+    winname = 'window_{}'.format(fig_n)
+    cv2.imshow(winname, img)
+    cv2.waitKey(delay)
