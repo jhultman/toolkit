@@ -12,7 +12,7 @@ class GOT10k(object):
     Publication:
         ``GOT-10k: A Large High-Diversity Benchmark for Generic Object
         Tracking in the Wild``, L. Huang, X. Zhao and K. Huang, ArXiv 2018.
-    
+
     Args:
         root_dir (string): Root directory of dataset where ``train``,
             ``val`` and ``test`` folders exist.
@@ -27,11 +27,11 @@ class GOT10k(object):
     def __init__(self, root_dir, subset='test', return_meta=False,
                  list_file=None):
         super(GOT10k, self).__init__()
-        assert subset in ['train', 'val', 'test'], 'Unknown subset.'
+        assert subset in ['train', 'dev', 'val', 'test'], 'Unknown subset.'
         self.root_dir = root_dir
         self.subset = subset
         self.return_meta = False if subset == 'test' else return_meta
-        
+
         if list_file is None:
             list_file = os.path.join(root_dir, subset, 'list.txt')
         self._check_integrity(root_dir, subset, list_file)
@@ -42,12 +42,12 @@ class GOT10k(object):
                          for s in self.seq_names]
         self.anno_files = [os.path.join(d, 'groundtruth.txt')
                            for d in self.seq_dirs]
-    
+
     def __getitem__(self, index):
-        r"""        
+        r"""
         Args:
             index (integer or string): Index or name of a sequence.
-        
+
         Returns:
             tuple: (img_files, anno) if ``return_meta`` is False, otherwise
                 (img_files, anno, meta), where ``img_files`` is a list of
@@ -79,14 +79,14 @@ class GOT10k(object):
         return len(self.seq_names)
 
     def _check_integrity(self, root_dir, subset, list_file=None):
-        assert subset in ['train', 'val', 'test']
+        assert subset in ['train', 'dev', 'val', 'test']
         if list_file is None:
             list_file = os.path.join(root_dir, subset, 'list.txt')
 
         if os.path.isfile(list_file):
             with open(list_file, 'r') as f:
                 seq_names = f.read().strip().split('\n')
-            
+
             # check each sequence folder
             for seq_name in seq_names:
                 seq_dir = os.path.join(root_dir, subset, seq_name)

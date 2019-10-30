@@ -75,7 +75,7 @@ def show_frame(image, boxes=None, fig_n=1, pause=0.001,
 
 
 def show_frame_fast(img, boxes=None, colors=None, thickness=3,
-               fig_n=1, delay=1, cvt_code=cv2.COLOR_RGB2BGR):
+               fig_n=1, delay=1, cvt_code=cv2.COLOR_RGB2BGR, text=''):
     if cvt_code is not None:
         img = cv2.cvtColor(img, cvt_code)
 
@@ -103,9 +103,15 @@ def show_frame_fast(img, boxes=None, colors=None, thickness=3,
             colors = np.expand_dims(colors, axis=0)
 
         for box, color in zip(boxes, colors):
+            thickness = int(np.clip(box[2:].mean(), 1, 3))
             pt1 = (box[0], box[1])
             pt2 = (box[0] + box[2], box[1] + box[3])
             img = cv2.rectangle(img, pt1, pt2, color.tolist(), thickness)
+    if text != '':
+        h, w = img.shape[:2]
+        cv2.putText(
+            img, text, (w//10, h//10), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255),
+        )
 
     winname = 'window_{}'.format(fig_n)
     cv2.imshow(winname, img)
