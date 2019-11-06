@@ -14,7 +14,7 @@ class LaSOT(object):
         ``LaSOT: A High-quality Benchmark for Large-scale Single Object Tracking``,
         H. Fan, L. Lin, F. Yang, P. Chu, G. Deng, S. Yu, H. Bai,
         Y. Xu, C. Liao, and H. Ling., CVPR 2019.
-    
+
     Args:
         root_dir (string): Root directory of dataset where sequence
             folders exist.
@@ -35,8 +35,8 @@ class LaSOT(object):
         self.seq_dirs = [os.path.join(
             os.path.dirname(f), 'img') for f in self.anno_files]
         self.seq_names = [os.path.basename(
-            os.path.dirname(f) for f in self.anno_files)]
-        
+            os.path.dirname(f)) for f in self.anno_files]
+
         # load subset sequence names
         split_file = os.path.join(
             os.path.dirname(__file__), 'lasot.json')
@@ -53,10 +53,10 @@ class LaSOT(object):
             for d in self.seq_dirs]
 
     def __getitem__(self, index):
-        r"""        
+        r"""
         Args:
             index (integer or string): Index or name of a sequence.
-        
+
         Returns:
             tuple: (img_files, anno) if ``return_meta`` is False, otherwise
                 (img_files, anno, meta), where ``img_files`` is a list of
@@ -81,7 +81,7 @@ class LaSOT(object):
     def __len__(self):
         return len(self.seq_names)
 
-    def _check_integrity(self, root_dir):
+    def _check_integrity(self, root_dir, subset):
         seq_names = os.listdir(root_dir)
         seq_names = [n for n in seq_names if not n[0] == '.']
 
@@ -103,7 +103,7 @@ class LaSOT(object):
         for att in ['full_occlusion', 'out_of_view']:
             att_file = os.path.join(seq_dir, att + '.txt')
             meta[att] = np.loadtxt(att_file, delimiter=',')
-        
+
         # nlp
         nlp_file = os.path.join(seq_dir, 'nlp.txt')
         with open(nlp_file, 'r') as f:

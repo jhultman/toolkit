@@ -103,7 +103,7 @@ def show_frame_fast(img, boxes=None, colors=None, thickness=3,
             colors = np.expand_dims(colors, axis=0)
 
         for box, color in zip(boxes, colors):
-            thickness = int(np.clip(box[2:].mean(), 1, 3))
+            thickness = int(np.clip(box[2:].mean() / 100, 1, 3))
             pt1 = (box[0], box[1])
             pt2 = (box[0] + box[2], box[1] + box[3])
             img = cv2.rectangle(img, pt1, pt2, color.tolist(), thickness)
