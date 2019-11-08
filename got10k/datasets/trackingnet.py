@@ -21,7 +21,7 @@ class TrackingNet(object):
     """
     def __init__(self, root_dir, subset='test'):
         super(TrackingNet, self).__init__()
-        assert subset in ['train', 'test'], 'Unknown subset.'
+        assert subset in ['train', 'test', 'val'], 'Unknown subset.'
 
         self.root_dir = root_dir
         self.subset = subset
@@ -29,6 +29,8 @@ class TrackingNet(object):
             self.subset_dirs = ['TEST']
         elif subset == 'train':
             self.subset_dirs = ['TRAIN_%d' % c for c in range(12)]
+        elif subset == 'val':
+            self.subset_dirs = ['VAL']
         self._check_integrity(root_dir, self.subset_dirs)
 
         self.anno_files = [glob.glob(os.path.join(
@@ -57,7 +59,7 @@ class TrackingNet(object):
 
         img_files = glob.glob(
             os.path.join(self.seq_dirs[index], '*.jpg'))
-        img_files = sorted(img_files, key=lambda x: int(x[:-4].split(os.sep)))
+        img_files = sorted(img_files, key=lambda x: int(x.split(os.sep)[-1][:-4]))
         anno = np.loadtxt(self.anno_files[index], delimiter=',')
 
         assert len(img_files) == len(anno)
@@ -72,7 +74,6 @@ class TrackingNet(object):
         # check each subset path
         for c in subset_dirs:
             subset_dir = os.path.join(root_dir, c)
-
             # check data and annotation folders
             for folder in ['anno', 'images']:
                 if not os.path.isdir(os.path.join(subset_dir, folder)):
